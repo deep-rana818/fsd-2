@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage users</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand-mark">R<span>BAC</span></div>
+
+    <a class="nav-link" href="dashboard.html">Item catalog</a>
+    <a class="nav-link active" href="users.html">Manage users</a>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar" id="userAvatar">â€“</div>
+        <div>
+          <div class="name" id="userName">â€”</div>
+          <div class="role-tag" id="userRole">â€”</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" style="width:100%" id="logoutBtn">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Manage users</h1>
+        <p class="lede">Admins can promote or demote any account. Changes apply the next time that person's token refreshes.</p>
+      </div>
+      <span class="badge">Admin only</span>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="usersBody"></tbody>
+    </table>
+  </main>
+</div>
+
+<script src="js/jwt.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/rbac.js"></script>
+<script>
+  let claims = null;
+
+  async function initUsersPage() {
+    claims = await window.RbacGuard.requirePermission("user:manage");
+    if (!claims) return;
+
+    document.getElementById("userAvatar").textContent = claims.name.split(" ").map(s => s[0]).join("").slice(0,2).toUpperCase();
+    document.getElementById("userName").textContent = claims.name;
+    document.getElementById("userRole").textContent = window.RbacGuard.ROLE_LABEL[claims.role];
+
+    renderUsers();
+  }
+
+  function renderUsers() {
+    const users = window.RbacAuth.getUsers();
+    const tbody = document.getElementById("usersBody");
+
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td class="item-name">${u.name}</td>
+        <td>${u.email}</td>
+        <td>
+          <select class="role-select" data-role-for="${u.id}" ${u.id === claims.sub ? "disabled" : ""}>
+            <option value="admin" ${u.role === "admin" ? "selected" : ""}>Admin</option>
+            <option value="editor" ${u.role === "editor" ? "selected" : ""}>Editor</option>
+            <option value="viewer" ${u.role === "viewer" ? "selected" : ""}>Viewer</option>
+          </select>
+        </td>
+        <td>${u.id === claims.sub ? `<span style="color:var(--muted); font-size:0.78rem;">This is you</span>` : ""}</td>
+      </tr>
+    `).join("");
+
+    tbody.querySelectorAll("[data-role-for]").forEach(select => {
+      select.addEventListener("change", () => {
+        const users = window.RbacAuth.getUsers();
+        const target = users.find(u => u.id === select.dataset.roleFor);
+        target.role = select.value;
+        window.RbacAuth.saveUsers(users);
+      });
+    });
+  }
+
+  document.getElementById("logoutBtn")?.addEventListener("click", () => {
+    window.RbacAuth.logout();
+    window.location.href = "index.html";
+  });
+
+  initUsersPage();
+</script>
+</body>
+</html>

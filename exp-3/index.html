@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-container" id="authContainer">
+
+    <!-- Sign in form -->
+    <div class="form-panel sign-in">
+      <form id="signInForm">
+        <h1>Sign in</h1>
+        <div class="social-row">
+          <div class="social-btn">f</div>
+          <div class="social-btn">G+</div>
+          <div class="social-btn">in</div>
+        </div>
+        <p class="form-hint">or use your account</p>
+
+        <div class="form-error" id="signInError"></div>
+
+        <input type="email" id="signInEmail" placeholder="Email" required autocomplete="username">
+        <input type="password" id="signInPassword" placeholder="Password" required autocomplete="current-password">
+        <a href="#" class="forgot-link">Forgot your password?</a>
+        <button type="submit" class="pill-btn" id="signInBtn">Sign in</button>
+
+        <p class="demo-note">
+          Demo accounts â€”<br>
+          <b>admin@demo.io</b> / admin123 (Admin)<br>
+          <b>editor@demo.io</b> / editor123 (Editor)<br>
+          <b>viewer@demo.io</b> / viewer123 (Viewer)
+        </p>
+
+        <p class="mobile-toggle" id="toSignUp">Don't have an account? Sign up</p>
+      </form>
+    </div>
+
+    <!-- Sign up form -->
+    <div class="form-panel sign-up">
+      <form id="signUpForm">
+        <h1>Create Account</h1>
+        <div class="social-row">
+          <div class="social-btn">f</div>
+          <div class="social-btn">G+</div>
+          <div class="social-btn">in</div>
+        </div>
+        <p class="form-hint">or use your email for registration</p>
+
+        <div class="form-error" id="signUpError"></div>
+
+        <input type="text" id="signUpName" placeholder="Name" required autocomplete="name">
+        <input type="email" id="signUpEmail" placeholder="Email" required autocomplete="email">
+        <input type="password" id="signUpPassword" placeholder="Password" required autocomplete="new-password">
+        <button type="submit" class="pill-btn" id="signUpBtn" style="margin-top:6px;">Sign up</button>
+
+        <p class="mobile-toggle" id="toSignIn">Already have an account? Sign in</p>
+      </form>
+    </div>
+
+    <!-- Sliding orange overlay -->
+    <div class="overlay-panel">
+      <div id="overlayContent">
+        <h1>Hello, Friend!</h1>
+        <p>Enter your personal details and start your journey with us</p>
+        <button type="button" class="pill-btn ghost" id="showSignUp">Sign up</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/jwt.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  const container = document.getElementById("authContainer");
+  const overlayContent = document.getElementById("overlayContent");
+
+  function setSignUpMode(isSignUp) {
+    container.classList.toggle("sign-up-mode", isSignUp);
+    overlayContent.innerHTML = isSignUp
+      ? `<h1>Welcome Back!</h1><p>To keep connected with us please login with your personal info</p><button type="button" class="pill-btn ghost" id="showSignIn">Sign in</button>`
+      : `<h1>Hello, Friend!</h1><p>Enter your personal details and start your journey with us</p><button type="button" class="pill-btn ghost" id="showSignUp">Sign up</button>`;
+
+    const overlayBtn = isSignUp ? document.getElementById("showSignIn") : document.getElementById("showSignUp");
+    overlayBtn.addEventListener("click", () => setSignUpMode(!isSignUp));
+  }
+
+  document.getElementById("showSignUp").addEventListener("click", () => setSignUpMode(true));
+  document.getElementById("toSignUp").addEventListener("click", (e) => { e.preventDefault(); setSignUpMode(true); });
+  document.getElementById("toSignIn").addEventListener("click", (e) => { e.preventDefault(); setSignUpMode(false); });
+
+  (async function init() {
+    await window.RbacAuth.ensureSeedUsers();
+    const existing = await window.RbacAuth.getCurrentUser();
+    if (existing) window.location.href = "dashboard.html";
+  })();
+
+  document.getElementById("signInForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorBox = document.getElementById("signInError");
+    const btn = document.getElementById("signInBtn");
+    errorBox.classList.remove("show");
+    btn.textContent = "Signing inâ€¦";
+    btn.disabled = true;
+
+    const email = document.getElementById("signInEmail").value.trim();
+    const password = document.getElementById("signInPassword").value;
+    const result = await window.RbacAuth.login(email, password);
+
+    if (!result.ok) {
+      errorBox.textContent = result.error;
+      errorBox.classList.add("show");
+      btn.textContent = "Sign in";
+      btn.disabled = false;
+      return;
+    }
+    window.location.href = "dashboard.html";
+  });
+
+  document.getElementById("signUpForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const errorBox = document.getElementById("signUpError");
+    const btn = document.getElementById("signUpBtn");
+    errorBox.classList.remove("show");
+    btn.textContent = "Creatingâ€¦";
+    btn.disabled = true;
+
+    const name = document.getElementById("signUpName").value.trim();
+    const email = document.getElementById("signUpEmail").value.trim();
+    const password = document.getElementById("signUpPassword").value;
+    const result = await window.RbacAuth.register(name, email, password);
+
+    if (!result.ok) {
+      errorBox.textContent = result.error;
+      errorBox.classList.add("show");
+      btn.textContent = "Sign up";
+      btn.disabled = false;
+      return;
+    }
+
+    // Auto sign in right after registering.
+    const loginResult = await window.RbacAuth.login(email, password);
+    if (loginResult.ok) {
+      window.location.href = "dashboard.html";
+    } else {
+      btn.textContent = "Sign up";
+      btn.disabled = false;
+      setSignUpMode(false);
+    }
+  });
+</script>
+</body>
+</html>
