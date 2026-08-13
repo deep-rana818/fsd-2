@@ -1,0 +1,44 @@
+{
+  "roles": {
+    "admin": {
+      "label": "Admin",
+      "permissions": ["item:read", "item:create", "item:upload", "item:delete", "user:manage"]
+    },
+    "editor": {
+      "label": "Editor",
+      "permissions": ["item:read", "item:create", "item:upload"]
+    },
+    "viewer": {
+      "label": "Viewer",
+      "permissions": ["item:read"]
+    }
+  },
+  "users": [
+    { "id": "u-001", "name": "Alice Admin", "email": "admin@demo.io", "password": "admin123", "role": "admin" },
+    { "id": "u-002", "name": "Eddie Editor", "email": "editor@demo.io", "password": "editor123", "role": "editor" },
+    { "id": "u-003", "name": "Vic Viewer", "email": "viewer@demo.io", "password": "viewer123", "role": "viewer" }
+  ],
+  "items": [
+    { "id": "it-01", "name": "Quarterly Report", "sub": "Finance", "status": "thriving", "owner": "Eddie Editor" },
+    { "id": "it-02", "name": "Onboarding Guide", "sub": "HR", "status": "monitor", "owner": "Alice Admin" },
+    { "id": "it-03", "name": "Brand Guidelines", "sub": "Marketing", "status": "dormant", "owner": "Eddie Editor" },
+    { "id": "it-04", "name": "API Reference", "sub": "Engineering", "status": "monitor", "owner": "Alice Admin" },
+    { "id": "it-05", "name": "Customer FAQ", "sub": "Support", "status": "thriving", "owner": "Vic Viewer" }
+  ],
+  "posts": [
+    {
+      "id": "p-01",
+      "title": "Welcome to the dashboard",
+      "body": "This is the first post in the system. Admins and editors can create new posts here.",
+      "author": "Alice Admin",
+      "date": "2026-08-01"
+    },
+    {
+      "id": "p-02",
+      "title": "Q3 roadmap notes",
+      "body": "Draft notes on what's shipping this quarter. Still being reviewed.",
+      "author": "Eddie Editor",
+      "date": "2026-08-04"
+    }
+  ]
+}

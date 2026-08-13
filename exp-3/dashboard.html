@@ -1,105 +1,12 @@
-﻿<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand-mark">R<span>BAC</span></div>
-
-    <a class="nav-link active" href="dashboard.html">Item catalog</a>
-    <a class="nav-link" id="navUsers" href="users.html">Manage users</a>
-
-    <div class="sidebar-footer">
-      <div class="user-chip">
-        <div class="user-avatar" id="userAvatar">â€“</div>
-        <div>
-          <div class="name" id="userName">â€”</div>
-          <div class="role-tag" id="userRole">â€”</div>
-        </div>
-      </div>
-      <button class="btn btn-ghost" style="width:100%" id="logoutBtn">Sign out</button>
-    </div>
-  </aside>
-
-  <main class="main-content">
-    <div class="page-header">
-      <div>
-        <h1>Item catalog</h1>
-        <p class="lede">Everything in the system, gated by your role's permissions.</p>
-      </div>
-      <span class="badge">Role-based access</span>
-    </div>
-
-    <div class="stat-row">
-      <div class="stat-plate">
-        <div class="num" id="statTotal">0</div>
-        <div class="label">Total items</div>
-      </div>
-      <div class="stat-plate">
-        <div class="num" id="statThriving">0</div>
-        <div class="label">Active</div>
-      </div>
-      <div class="stat-plate">
-        <div class="num" id="statMonitor">0</div>
-        <div class="label">Needs review</div>
-      </div>
-    </div>
-
-    <div class="toolbar">
-      <input type="text" class="search-input" id="searchInput" placeholder="Search itemsâ€¦">
-      <div style="display:flex; gap:8px;">
-        <button class="btn btn-ghost" id="uploadItemBtn">Upload file</button>
-        <input type="file" id="uploadItemInput" hidden>
-        <button class="btn btn-primary" id="addItemBtn">+ Add item</button>
-      </div>
-    </div>
-
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Status</th>
-          <th>Owner</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="itemBody"></tbody>
-    </table>
-  </main>
-</div>
-
-<!-- Add item modal -->
-<div class="modal-backdrop" id="itemModal">
-  <div class="modal-card">
-    <h3 id="modalTitle">Add item</h3>
-    <form id="itemForm">
-      <label for="fName">Name</label>
-      <input type="text" id="fName" required placeholder="e.g. Q3 Report">
-      <label for="fCategory">Category</label>
-      <input type="text" id="fCategory" required placeholder="e.g. Finance">
-      <label for="fStatus">Status</label>
-      <select id="fStatus" class="role-select" style="width:100%">
-        <option value="thriving">Active</option>
-        <option value="monitor">Needs review</option>
-        <option value="dormant">Archived</option>
-      </select>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script src="js/jwt.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/rbac.js"></script>
-<script src="js/app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script>location.replace("index.html#/dashboard");</script>
+  </head>
+  <body>
+    <a href="index.html#/dashboard">Open dashboard</a>
+  </body>
 </html>
