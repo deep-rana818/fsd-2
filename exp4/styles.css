@@ -1,0 +1,382 @@
+:root {
+  --bg: #f7f8fb;
+  --panel: #ffffff;
+  --ink: #1d2433;
+  --muted: #687386;
+  --line: #dbe1ea;
+  --blue: #2563eb;
+  --green: #16875d;
+  --amber: #b45309;
+  --red: #dc2626;
+  --shadow: 0 16px 40px rgba(30, 41, 59, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.title-block h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.title-block p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.toggle {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(360px, 100%);
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #eef2f7;
+}
+
+.toggle button {
+  border: 0;
+  border-radius: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.toggle button.active {
+  color: white;
+  background: var(--blue);
+  box-shadow: 0 5px 16px rgba(37, 99, 235, 0.28);
+}
+
+.ghost-button {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  background: white;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 260px;
+  gap: 16px;
+  padding: 16px;
+}
+
+.sidebar,
+.monitor,
+.calendar-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-header h2,
+.monitor h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.panel-header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.post-list {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.post-card {
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--blue);
+  border-radius: 8px;
+  background: white;
+  padding: 10px;
+  cursor: grab;
+}
+
+.post-title {
+  display: block;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.post-meta {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.calendar-wrap {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.calendar-toolbar h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.legend {
+  display: flex;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.grid-header,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(84px, 1fr));
+}
+
+.grid-header {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+}
+
+.grid-header div {
+  padding: 10px;
+  border-right: 1px solid var(--line);
+}
+
+.calendar-grid {
+  min-height: 620px;
+}
+
+.day-cell {
+  min-height: 124px;
+  padding: 9px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: white;
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+
+.day-cell.drop-ready {
+  background: #eff6ff;
+  box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.38);
+}
+
+.day-cell.recent-render {
+  box-shadow: inset 0 0 0 2px rgba(220, 38, 38, 0.5);
+}
+
+.day-cell.outside {
+  background: #f4f6f9;
+  color: #98a2b3;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.date-number {
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.render-pill {
+  min-width: 34px;
+  border-radius: 999px;
+  padding: 2px 7px;
+  color: white;
+  background: var(--green);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.render-pill.hot {
+  background: var(--amber);
+}
+
+.render-pill.over {
+  background: var(--red);
+}
+
+.events {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.event-chip {
+  display: grid;
+  gap: 3px;
+  border: 0;
+  border-radius: 7px;
+  padding: 7px;
+  color: white;
+  text-align: left;
+  cursor: grab;
+  min-height: 46px;
+}
+
+.event-chip span {
+  overflow-wrap: anywhere;
+}
+
+.event-chip small {
+  opacity: 0.86;
+  font-size: 11px;
+}
+
+.monitor {
+  padding: 14px;
+}
+
+.metric-stack {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.metric {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.metric strong {
+  display: block;
+  font-size: 24px;
+}
+
+.metric span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric.impact {
+  border-color: rgba(220, 38, 38, 0.28);
+  background: #fff7f7;
+}
+
+.note {
+  margin-top: 14px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .workspace {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+
+  .monitor {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 780px) {
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .calendar-wrap {
+    overflow-x: auto;
+  }
+
+  .calendar-grid,
+  .grid-header {
+    min-width: 560px;
+    grid-template-columns: repeat(7, minmax(64px, 1fr));
+  }
+}
