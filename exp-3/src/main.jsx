@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import seedData from "../data/app-data.json";
+import { createAccessToken, verifyAccessToken } from "./jwt";
 import "../css/style.css";
 
 const USERS_KEY = "rbac.users";
@@ -61,7 +62,7 @@ function App() {
   const [users, setUsers] = useState([]);
   const [items, setItems] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [sessionUserId, setSessionUserId] = useState(() => localStorage.getItem(SESSION_KEY) || "");
+  const [sessionClaims, setSessionClaims] = useState(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -72,6 +73,17 @@ function App() {
       setUsers(readJson(USERS_KEY, []));
       setItems(readJson(ITEMS_KEY, []));
       setPosts(readJson(POSTS_KEY, []));
+      const storedSession = readJson(SESSION_KEY, null);
+      if (storedSession?.accessToken) {
+        const tokenCheck = await verifyAccessToken(storedSession.accessToken);
+        if (tokenCheck.valid) {
+          setSessionClaims(tokenCheck.claims);
+        } else {
+          localStorage.removeItem(SESSION_KEY);
+        }
+      } else {
+        localStorage.removeItem(SESSION_KEY);
+      }
       setReady(true);
     }
     init();
@@ -83,7 +95,22 @@ function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  const currentUser = users.find((user) => user.id === sessionUserId) || null;
+  useEffect(() => {
+    if (!sessionClaims?.exp) return undefined;
+    const delay = Math.max(sessionClaims.exp * 1000 - Date.now(), 0);
+    const timer = window.setTimeout(() => {
+      localStorage.removeItem(SESSION_KEY);
+      setSessionClaims(null);
+      location.hash = "#/login";
+      setRoute("login");
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [sessionClaims?.exp]);
+
+  const storedUser = users.find((user) => user.id === sessionClaims?.sub);
+  const currentUser = storedUser && sessionClaims
+    ? { ...storedUser, role: sessionClaims.role }
+    : null;
 
   function saveUsers(nextUsers) {
     setUsers(nextUsers);
@@ -105,15 +132,19 @@ function App() {
     setRoute(nextRoute);
   }
 
-  function login(userId) {
-    localStorage.setItem(SESSION_KEY, userId);
-    setSessionUserId(userId);
+  async function login(user) {
+    const accessToken = await createAccessToken(user);
+    const tokenCheck = await verifyAccessToken(accessToken);
+    if (!tokenCheck.valid) return { ok: false, message: "Unable to create a secure session." };
+    writeJson(SESSION_KEY, { accessToken });
+    setSessionClaims(tokenCheck.claims);
     navigate("dashboard");
+    return { ok: true };
   }
 
   function logout() {
     localStorage.removeItem(SESSION_KEY);
-    setSessionUserId("");
+    setSessionClaims(null);
     navigate("login");
   }
 
@@ -160,7 +191,8 @@ function AuthPage({ users, saveUsers, onLogin }) {
       setError("Email or password is wrong.");
       return;
     }
-    onLogin(user.id);
+    const result = await onLogin(user);
+    if (!result.ok) setError(result.message);
   }
 
   async function handleSignUp(event) {
@@ -182,7 +214,8 @@ function AuthPage({ users, saveUsers, onLogin }) {
       passwordHash: await sha256(signUp.password),
     };
     saveUsers([...users, nextUser]);
-    onLogin(nextUser.id);
+    const result = await onLogin(nextUser);
+    if (!result.ok) setError(result.message);
   }
 
   return (
